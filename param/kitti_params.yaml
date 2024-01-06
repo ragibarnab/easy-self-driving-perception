@@ -1,0 +1,4 @@
+/**:
+    ros__parameters:
+      tracking_path: "/home/rae384/data/kitti/tracking/training/"
+      sequence_id: 9

@@ -4,7 +4,7 @@
   <name>multi_object_tracker_3d</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="rae3840924@gmail.com">rae384</maintainer>
+  <maintainer email="rae3840924@gmail.com">Ragib Arnab</maintainer>
   <license>TODO: License declaration</license>
 
   <depend>rclpy</depend>

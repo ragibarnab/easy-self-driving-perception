@@ -18,7 +18,7 @@ class ObjectVisualizerNode(Node):
 
         self.subscription = self.create_subscription(
             msg_type = Object3dArray,
-            topic = 'objdet3d_raw',
+            topic = 'objdet3d_tracked',
             callback = self.visualize_objects,
             qos_profile = 1
         )
@@ -32,40 +32,56 @@ class ObjectVisualizerNode(Node):
         marker_array = MarkerArray()
         for object in msg.objects:
             
-            marker = Marker()
-            marker.header.frame_id = msg.header.frame_id
-            marker.header.stamp = self.get_clock().now().to_msg()
-            marker.id = marker.header.stamp.nanosec # should be replaced with object.id
-            marker.type = 5
-            marker.color.r, marker.color.g, marker.color.b = LABEL_TO_COLOR[object.label]
-            marker.color.a = 1.0
-            marker.scale.x = 0.10
-            marker.lifetime = Duration(seconds=5.0).to_msg()    # should be removed when object.id exists
-            marker.ns = "visualization"
+            box = Marker()
+            box.header.frame_id = msg.header.frame_id
+            box.header.stamp = self.get_clock().now().to_msg()
+            box.id = object.id
+            box.type = 5
+            box.color.r, box.color.g, box.color.b = LABEL_TO_COLOR[object.label]
+            box.color.a = 1.0
+            box.scale.x = 0.10
+            box.lifetime = Duration(seconds=0.2).to_msg()    # should be removed when object.id exists
+            box.ns = "object_bounding_box"
 
             for i in range(4):
                 # this should do 0-1, 1-2, 2-3, 3-4
                 src = object.bounding_box.corners[i]
                 dst = object.bounding_box.corners[(i+1) % 4]
-                marker.points.append(src)
-                marker.points.append(dst)
+                box.points.append(src)
+                box.points.append(dst)
 
                 # this should do 4-5, 5-6, 6-7, 7-4
                 src = object.bounding_box.corners[i+4]
                 dst = object.bounding_box.corners[((i+1) % 4) + 4]
-                marker.points.append(src)
-                marker.points.append(dst)
+                box.points.append(src)
+                box.points.append(dst)
 
                 # this should do 0-4, 1-5, 2-6, 3-7
                 src = object.bounding_box.corners[i]
                 dst = object.bounding_box.corners[i+4]
-                marker.points.append(src)
-                marker.points.append(dst)
+                box.points.append(src)
+                box.points.append(dst)
 
-            marker_array.markers.append(marker)
+            marker_array.markers.append(box)
+
+            tag = Marker()
+            tag.header.frame_id = msg.header.frame_id
+            tag.header.stamp = self.get_clock().now().to_msg()
+            tag.id = object.id
+            tag.type = 9
+            tag.color.r, tag.color.g, tag.color.b = (1.0, 1.0, 1.0)
+            tag.color.a = 1.0
+            tag.scale.z = 0.5
+            tag.lifetime = Duration(seconds=0.2).to_msg()    # should be removed when object.id exists
+            tag.ns = "object_tag"
+            tag.pose.position.x = object.bounding_box.coordinates[0]
+            tag.pose.position.y = object.bounding_box.coordinates[1]
+            tag.pose.position.z = object.bounding_box.coordinates[2] + 1.5 * object.bounding_box.coordinates[5]
+            tag.text = f'id:{object.id}'
+
+            marker_array.markers.append(tag)
 
         self.visualization_publisher.publish(marker_array)
-        self.get_logger().info("Published visualization")
         
 
 
