@@ -14,7 +14,7 @@ This project is my modular approach to self-driving perception in ROS 2. The mot
 
 - [x] 3D Object Detection
 - [x] 3D Multi-Object Tracking
-- [x] Object Sisualization
-- [ ] Odometry, SLAM, Localization
+- [x] Object Visualization
+- [ ] Lidar SLAM, currently work-in-progress
 - [ ] Road and Lane Detection and Tracking
 - [ ] Etc.
